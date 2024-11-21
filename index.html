@@ -24,16 +24,16 @@
         #rss-feed-container {
           display: block;
           width: 100%;
-          height: 400px; /* הגבלת גובה */
-          overflow-y: auto; /* גלילה אנכית */
+          height: 400px; 
+          overflow-y: auto; 
           position: relative;
         }
 
         #rss-feed {
           display: flex;
           flex-direction: column;
-          animation: ticker 60s linear infinite; /* אנימציה איטית */
-          opacity: 0; /* נסתר בהתחלה */
+          animation: ticker 60s linear infinite; 
+          opacity: 0; 
           transition: opacity 0.5s;
         }
 
@@ -44,7 +44,7 @@
         }
 
         #rss-feed li {
-          margin-bottom: 20px; /* רווח בין כל פריט */
+          margin-bottom: 20px; 
         }
 
         #rss-feed a {
@@ -77,13 +77,12 @@
           background-color: #0056b3;
         }
 
-        /* אנימציה גלילה אנכית */
         @keyframes ticker {
           0% {
             transform: translateY(0);
           }
           100% {
-            transform: translateY(-100%); /* גלילה עד למעלה */
+            transform: translateY(-100%);
           }
         }
 
@@ -94,7 +93,7 @@
           margin-top: 50px;
         }
 
-        /* עיצוב השעה ותאריך למטה בצד ימין */
+     
         #time {
           position: fixed;
           bottom: 10px;
@@ -108,9 +107,9 @@
         h1 {
             background-image: url('https://pngimg.com/d/donut_PNG8.png');
             background-repeat: no-repeat;
-            background-size: 30px 30px; /* גודל התמונה */
-            padding-left: 40px; /* רווח בין התמונה לטקסט */
-            line-height: 40px; /* יש להתאים לגובה התמונה */
+            background-size: 30px 30px; 
+            padding-left: 40px; 
+            line-height: 40px; 
         }
     </style>
 </head>
@@ -128,7 +127,7 @@
 <label for="speed-control">Adjust Speed: </label>
 <input type="range" id="speed-control" min="30" max="120" value="60">
 
-<!-- הוספת אלמנט השעה -->
+
 <div id="time"></div>
 
 <script>
@@ -139,7 +138,7 @@
 
     // Load and display RSS Feed
     function loadRSSFeed() {
-        document.getElementById('loading').style.display = 'block'; // מוודא שה-Loading מוצג לפני שמתחילים לטעון
+        document.getElementById('loading').style.display = 'block'; 
         fetch(feedUrl)
             .then(response => response.json())
             .then(data => {
@@ -168,8 +167,8 @@
         html += '</ul>';
         const rssFeedElement = document.getElementById('rss-feed');
         rssFeedElement.innerHTML = html;
-        document.getElementById('loading').style.display = 'none'; // הסתרת ה-Loading אחרי טעינת התוכן
-        rssFeedElement.style.opacity = 1; // הצגת התוכן לאחר טעינתו
+        document.getElementById('loading').style.display = 'none'; 
+        rssFeedElement.style.opacity = 1; 
 
         // Apply animation speed based on selected range
         const tickerElement = document.getElementById('rss-feed');
@@ -227,21 +226,21 @@
         const timeElement = document.getElementById('time');
         const now = new Date();
 
-        // יום בשבוע
+
         const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
         const dayOfWeek = daysOfWeek[now.getDay()];
 
-        // תאריך
+
         const date = now.getDate();
         const month = now.getMonth() + 1; // החודש במערכת הוא בין 0 ל-11, אז מוסיפים 1
         const year = now.getFullYear();
 
-        // שעה
+
         const hours = now.getHours().toString().padStart(2, '0');
         const minutes = now.getMinutes().toString().padStart(2, '0');
         const seconds = now.getSeconds().toString().padStart(2, '0');
 
-        // הצגת התאריך והשעה
+
         timeElement.textContent = `${dayOfWeek}, ${date}/${month}/${year} - ${hours}:${minutes}:${seconds}`;
     }
 
