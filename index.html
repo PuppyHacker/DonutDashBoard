@@ -132,7 +132,7 @@
 
 <script>
     const feedUrl = "https://rss2json.com/api.json?rss_url=https://cvefeed.io/rssfeed/newsroom.xml&count=20";
-    const keywords = ["CVE", "security", "vulnerability", "attack", "exploit"];
+    const keywords = ["CVE", "security", "vulnerability", "attack", "exploit", "zero day", "wild", "POC"];
     let feedData = [];
     let tickerSpeed = 60; // Default speed
 
@@ -211,14 +211,14 @@
     const stopButton = document.getElementById('stop-ticker');
     stopButton.addEventListener('click', () => {
         const tickerElement = document.getElementById('rss-feed');
-        tickerElement.style.animationPlayState = 'paused'; // עוצר את האנימציה
+        tickerElement.style.animationPlayState = 'paused';
     });
 
     // Resume animation on button click
     const resumeButton = document.getElementById('resume-ticker');
     resumeButton.addEventListener('click', () => {
         const tickerElement = document.getElementById('rss-feed');
-        tickerElement.style.animationPlayState = 'running'; // ממשיך את האנימציה
+        tickerElement.style.animationPlayState = 'running'; 
     });
 
     // Function to update time and date
@@ -232,7 +232,7 @@
 
 
         const date = now.getDate();
-        const month = now.getMonth() + 1; // החודש במערכת הוא בין 0 ל-11, אז מוסיפים 1
+        const month = now.getMonth() + 1; 
         const year = now.getFullYear();
 
 
@@ -251,5 +251,6 @@
     loadRSSFeed();
     setInterval(() => {location.reload();}, 30000); // 60,000 milliseconds = 1 minute
 </script>
+<h4>Words to highlight: "CVE", "security", "vulnerability", "attack", "exploit",  "zero day", "wild", "POC"</h4>
 </body>
 </html>
