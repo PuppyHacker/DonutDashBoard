@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Donut News</title>
+    <style>
+        body {
+          font-family: Orbitron, sans-serif;
+          margin: 0;
+          padding: 0;
+          background-color: white;
+          color: black;
+          transition: all 0.3s ease;
+        }
+
+        /* Dark Mode */
+        body.dark-mode {
+          background-color: #121212;
+          color: #ffffff;
+        }
+
+        #rss-feed-container {
+          display: block;
+          width: 100%;
+          height: 400px; /* הגבלת גובה */
+          overflow-y: auto; /* גלילה אנכית */
+          position: relative;
+        }
+
+        #rss-feed {
+          display: flex;
+          flex-direction: column;
+          animation: ticker 60s linear infinite; /* אנימציה איטית */
+          opacity: 0; /* נסתר בהתחלה */
+          transition: opacity 0.5s;
+        }
+
+        #rss-feed ul {
+          list-style: none;
+          padding: 0;
+          margin: 0;
+        }
+
+        #rss-feed li {
+          margin-bottom: 20px; /* רווח בין כל פריט */
+        }
+
+        #rss-feed a {
+          text-decoration: none;
+          color: #007BFF;
+        }
+
+        #rss-feed a:hover {
+          text-decoration: underline;
+        }
+
+        .highlight {
+          background-color: yellow;
+          color: black;
+          font-weight: bold;
+        }
+
+        .dark-mode-toggle {
+          margin: 20px;
+          padding: 10px 20px;
+          background-color: #007BFF;
+          color: white;
+          border: none;
+          border-radius: 5px;
+          cursor: pointer;
+          font-size: 16px;
+        }
+
+        .dark-mode-toggle:hover {
+          background-color: #0056b3;
+        }
+
+        /* אנימציה גלילה אנכית */
+        @keyframes ticker {
+          0% {
+            transform: translateY(0);
+          }
+          100% {
+            transform: translateY(-100%); /* גלילה עד למעלה */
+          }
+        }
+
+        #loading {
+          font-size: 24px;
+          color: #007BFF;
+          text-align: center;
+          margin-top: 50px;
+        }
+
+        /* עיצוב השעה ותאריך למטה בצד ימין */
+        #time {
+          position: fixed;
+          bottom: 10px;
+          right: 10px;
+          font-size: 50px;
+          background-color: rgba(0, 0, 0, 0.5);
+          color: white;
+          padding: 5px 15px;
+          border-radius: 5px;
+        }
+        h1 {
+            background-image: url('https://pngimg.com/d/donut_PNG8.png');
+            background-repeat: no-repeat;
+            background-size: 30px 30px; /* גודל התמונה */
+            padding-left: 40px; /* רווח בין התמונה לטקסט */
+            line-height: 40px; /* יש להתאים לגובה התמונה */
+        }
+    </style>
+</head>
+<body>
+<h1>Donut News</h1>
+
+<div id="loading">Loading RSS Feed...</div>
+<div id="rss-feed-container">
+    <div id="rss-feed"></div>
+</div>
+<button class="dark-mode-toggle" id="toggle-dark-mode">Toggle Dark Mode</button>
+<button class="dark-mode-toggle" id="stop-ticker">Stop Scrolling</button>
+<button class="dark-mode-toggle" id="resume-ticker">Resume Scrolling</button>
+<br><br>
+<label for="speed-control">Adjust Speed: </label>
+<input type="range" id="speed-control" min="30" max="120" value="60">
+
+<!-- הוספת אלמנט השעה -->
+<div id="time"></div>
+
+<script>
+    const feedUrl = "https://rss2json.com/api.json?rss_url=https://cvefeed.io/rssfeed/newsroom.xml&count=20";
+    const keywords = ["CVE", "security", "vulnerability", "attack", "exploit"];
+    let feedData = [];
+    let tickerSpeed = 60; // Default speed
+
+    // Load and display RSS Feed
+    function loadRSSFeed() {
+        document.getElementById('loading').style.display = 'block'; // מוודא שה-Loading מוצג לפני שמתחילים לטעון
+        fetch(feedUrl)
+            .then(response => response.json())
+            .then(data => {
+                feedData = data.items;
+                renderFeed();
+            })
+            .catch(error => {
+                document.getElementById('rss-feed').innerHTML = "Failed to load RSS Feed.";
+                console.error(error);
+            });
+    }
+
+    // Render feed items with highlighted keywords
+    function renderFeed() {
+        let html = '<ul>';
+        feedData.forEach(item => {
+            const highlightedTitle = highlightKeywords(item.title);
+            const highlightedDescription = highlightKeywords(item.description);
+            html += `
+                <li>
+                    <a href="${item.link}" target="_blank">${highlightedTitle}</a>
+                    <p>${highlightedDescription}</p>
+                </li>
+            `;
+        });
+        html += '</ul>';
+        const rssFeedElement = document.getElementById('rss-feed');
+        rssFeedElement.innerHTML = html;
+        document.getElementById('loading').style.display = 'none'; // הסתרת ה-Loading אחרי טעינת התוכן
+        rssFeedElement.style.opacity = 1; // הצגת התוכן לאחר טעינתו
+
+        // Apply animation speed based on selected range
+        const tickerElement = document.getElementById('rss-feed');
+        tickerElement.style.animationDuration = `${tickerSpeed}s`;
+    }
+
+    function highlightKeywords(text) {
+        keywords.forEach(keyword => {
+            const regex = new RegExp(`\\b(${keyword})\\b`, "gi");
+            text = text.replace(regex, `<span class="highlight">$1</span>`);
+        });
+        return text;
+    }
+
+    // Dark mode toggle
+    const toggleButton = document.getElementById('toggle-dark-mode');
+    const body = document.body;
+    if (localStorage.getItem('dark-mode') === 'enabled') {
+        body.classList.add('dark-mode');
+    }
+
+    toggleButton.addEventListener('click', () => {
+        body.classList.toggle('dark-mode');
+        if (body.classList.contains('dark-mode')) {
+            localStorage.setItem('dark-mode', 'enabled');
+        } else {
+            localStorage.setItem('dark-mode', 'disabled');
+        }
+    });
+
+    // Handle speed adjustment
+    const speedControl = document.getElementById('speed-control');
+    speedControl.addEventListener('input', (event) => {
+        tickerSpeed = event.target.value;
+        const tickerElement = document.getElementById('rss-feed');
+        tickerElement.style.animationDuration = `${tickerSpeed}s`;
+    });
+
+    // Stop animation on button click
+    const stopButton = document.getElementById('stop-ticker');
+    stopButton.addEventListener('click', () => {
+        const tickerElement = document.getElementById('rss-feed');
+        tickerElement.style.animationPlayState = 'paused'; // עוצר את האנימציה
+    });
+
+    // Resume animation on button click
+    const resumeButton = document.getElementById('resume-ticker');
+    resumeButton.addEventListener('click', () => {
+        const tickerElement = document.getElementById('rss-feed');
+        tickerElement.style.animationPlayState = 'running'; // ממשיך את האנימציה
+    });
+
+    // Function to update time and date
+    function updateTime() {
+        const timeElement = document.getElementById('time');
+        const now = new Date();
+
+        // יום בשבוע
+        const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        const dayOfWeek = daysOfWeek[now.getDay()];
+
+        // תאריך
+        const date = now.getDate();
+        const month = now.getMonth() + 1; // החודש במערכת הוא בין 0 ל-11, אז מוסיפים 1
+        const year = now.getFullYear();
+
+        // שעה
+        const hours = now.getHours().toString().padStart(2, '0');
+        const minutes = now.getMinutes().toString().padStart(2, '0');
+        const seconds = now.getSeconds().toString().padStart(2, '0');
+
+        // הצגת התאריך והשעה
+        timeElement.textContent = `${dayOfWeek}, ${date}/${month}/${year} - ${hours}:${minutes}:${seconds}`;
+    }
+
+    // Update time every second
+    setInterval(updateTime, 1000);
+
+    // Initial load
+    loadRSSFeed();
+</script>
+</body>
+</html>
